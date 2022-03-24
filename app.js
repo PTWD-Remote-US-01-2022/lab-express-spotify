@@ -58,19 +58,32 @@ app.get('/albums/:artistId', (req, res) => {
     );
 });
 
-app.get('/tracks/:albumId', (req, res) => {
+// app.get('/tracks/:albumId', (req, res) => {
+//   const albumId = req.params.albumId;
+//   spotifyApi
+//     .getAlbumTracks(albumId)
+//     .then((data) => {
+//       //console.log('The received data from the API: ', data.body);
+//       //res.json(data.body.items);
+//       // ----> 'HERE WHAT WE WANT TO DO AFTER RECEIVING THE DATA FROM THE API'
+//       res.render('tracks', { tracks: data.body.items });
+//     })
+//     .catch((err) =>
+//       console.log('The error while searching artists occurred: ', err)
+//     );
+// });
+
+//With Async await
+app.get('/tracks/:albumId', async (req, res) => {
   const albumId = req.params.albumId;
-  spotifyApi
-    .getAlbumTracks(albumId)
-    .then((data) => {
-      //console.log('The received data from the API: ', data.body);
-      //res.json(data.body.items);
-      // ----> 'HERE WHAT WE WANT TO DO AFTER RECEIVING THE DATA FROM THE API'
-      res.render('tracks', { tracks: data.body.items });
-    })
-    .catch((err) =>
-      console.log('The error while searching artists occurred: ', err)
-    );
+  try {
+    const {
+      body: { items: tracks },
+    } = await spotifyApi.getAlbumTracks(albumId);
+    res.render('tracks', { tracks });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.listen(3000, () =>
